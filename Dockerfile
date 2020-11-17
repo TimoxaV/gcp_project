@@ -17,7 +17,7 @@ RUN mvn package -DskipTests
 # https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
 FROM adoptopenjdk/openjdk11:alpine-slim
 
-# Copy the jar to the production image from the builder stage.
+# Copy the jar and needed files to the production image from the builder stage.
 COPY --from=builder /app/target/cloud-*.jar /cloud.jar
 COPY --from=builder /app/target/classes/clients_required_upload.json /home/clients_required_upload.json
 COPY --from=builder /app/target/classes/clients_upload.json /home/clients_upload.json
@@ -25,11 +25,3 @@ COPY --from=builder /app/target/classes/clientsFromStorage.avro /home/clientsFro
 
 # Run the web service on container startup.
 CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/cloud.jar"]
-
-
-#FROM openjdk:11-oracle
-#ARG DEPENDENCY=target/dependency
-#COPY ${DEPENDENCY}/BOOT-INF/classes /app
-#COPY ${DEPENDENCY}/META-INF /app/META-INF
-#COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
-#ENTRYPOINT ["java","-cp","app:app/lib/*","gcp.project.cloud.CloudApplication"]

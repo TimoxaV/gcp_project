@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Configuration;
         "gcp.project.cloud.service"
 })
 public class AppConfig {
+    @Value("${gcred.file}")
+    private String gcred;
     @Value("${bigquery.project-id}")
     private String projectId;
 
@@ -28,7 +30,7 @@ public class AppConfig {
     public ServiceAccountCredentials getCredentials() {
         ServiceAccountCredentials credentials;
         try {
-            InputStream credStream = getClass().getResourceAsStream("/gcred.json");
+            InputStream credStream = getClass().getResourceAsStream(gcred);
             credentials = ServiceAccountCredentials.fromStream(credStream);
             credStream.close();
             return credentials;

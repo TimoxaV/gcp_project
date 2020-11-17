@@ -70,7 +70,6 @@
             <artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
             <version>2.25.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -134,13 +133,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-<!--            <dependency>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-dependency-plugin</artifactId>-->
-<!--                <version>3.1.2</version>-->
-<!--            </dependency>-->
-
         </dependencies>
     </dependencyManagement>
     <build>
@@ -174,36 +166,6 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>com.spotify</groupId>-->
-<!--                <artifactId>dockerfile-maven-plugin</artifactId>-->
-<!--                <version>1.4.9</version>-->
-<!--                <configuration>-->
-<!--                    <repository>${docker.image.prefix}/${project.artifactId}</repository>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-dependency-plugin</artifactId>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>unpack</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>unpack</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <artifactItems>-->
-<!--                                <artifactItem>-->
-<!--                                    <groupId>${project.groupId}</groupId>-->
-<!--                                    <artifactId>${project.artifactId}</artifactId>-->
-<!--                                    <version>${project.version}</version>-->
-<!--                                </artifactItem>-->
-<!--                            </artifactItems>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>appengine-maven-plugin</artifactId>
@@ -212,10 +174,8 @@
                     <projectId>${google.project.id}</projectId>
                     <stage.enableJarSplitting>true</stage.enableJarSplitting>
                     <deploy.stopPreviousVersion>true</deploy.stopPreviousVersion>
-<!--                    <cloudSdkPath>/usr/foo/path/to/cloudsdk</cloudSdkPath>-->
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

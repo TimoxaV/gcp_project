@@ -8,7 +8,6 @@ import gcp.project.cloud.service.parsing.ConvertDataToObjectService;
 import gcp.project.cloud.service.parsing.ConvertObjectToDataService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,18 +16,6 @@ public class ClientServiceImpl implements ClientService {
     private final BigQueryRepository bigQueryRepository;
     private final ConvertDataToObjectService<Client> dataToObjectService;
     private final ConvertObjectToDataService<Client> objectToDataService;
-    @Value("${storage.bucket.name}")
-    private String storageBucketName;
-    @Value("${storage.object.name}")
-    private String storageObjectName;
-    @Value("${clients.from.storage.avro}")
-    private String clientsFromStorageAvro;
-    @Value("${data.set}")
-    private String dataSet;
-    @Value("${clients.table}")
-    private String clientsTable;
-    @Value("${json.to.upload}")
-    private String jsonToUpload;
 
     @Autowired
     public ClientServiceImpl(GoogleStorageRepository googleStorageRepository,
@@ -42,15 +29,17 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<Client> downloadClients() {
+    public List<Client> downloadClients(String storageBucketName, String storageObjectName,
+                                        String clientsFromStorageAvro) {
         googleStorageRepository.downloadObjectFromStorage(storageBucketName,
                 storageObjectName, clientsFromStorageAvro);
-        return dataToObjectService.parseFileToObject();
+        return dataToObjectService.parseFileToObject(clientsFromStorageAvro);
     }
 
     @Override
-    public void uploadClients(List<Client> clients) {
-        objectToDataService.writeObjectToFile(clients);
+    public void uploadClients(List<Client> clients, String jsonToUpload, String dataSet,
+                              String clientsTable) {
+        objectToDataService.writeObjectToFile(clients, jsonToUpload);
         bigQueryRepository.writeToTable(dataSet, clientsTable, jsonToUpload);
     }
 }

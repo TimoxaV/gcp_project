@@ -7,5 +7,6 @@ import java.util.List;
 public interface ClientRequiredDtoService {
     List<ClientRequiredDto> getClientRequiredDto(List<Client> clients);
 
-    void uploadClientsRequiredDto(List<ClientRequiredDto> clientRequiredDtos);
+    void uploadClientsRequiredDto(List<ClientRequiredDto> clientRequiredDtos, String dataSet,
+                                  String clientsRequiredTable, String requiredJsonToUpload);
 }

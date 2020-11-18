@@ -6,6 +6,7 @@ import gcp.project.cloud.service.ClientRequiredDtoService;
 import gcp.project.cloud.service.ClientService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +14,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProcessController {
     private final ClientService clientService;
     private final ClientRequiredDtoService clientRequiredDtoService;
+    @Value("${storage.bucket.name}")
+    private String storageBucketName;
+    @Value("${storage.object.name}")
+    private String storageObjectName;
+    @Value("${clients.from.storage.avro}")
+    private String clientsFromStorageAvro;
+    @Value("${data.set}")
+    private String dataSet;
+    @Value("${clients.table}")
+    private String clientsTable;
+    @Value("${json.to.upload}")
+    private String jsonToUpload;
+    @Value("${clients.required.table}")
+    private String clientsRequiredTable;
+    @Value("${json.to.upload.required.fields}")
+    private String requiredJsonToUpload;
 
     @Autowired
     public ProcessController(ClientService clientService,
@@ -28,11 +45,13 @@ public class ProcessController {
 
     @GetMapping("/process")
     public String process() {
-        List<Client> clients = clientService.downloadClients();
-        clientService.uploadClients(clients);
+        List<Client> clients = clientService.downloadClients(storageBucketName, storageObjectName,
+                clientsFromStorageAvro);
+        clientService.uploadClients(clients, jsonToUpload, dataSet, clientsTable);
         List<ClientRequiredDto> clientRequiredDto =
                 clientRequiredDtoService.getClientRequiredDto(clients);
-        clientRequiredDtoService.uploadClientsRequiredDto(clientRequiredDto);
+        clientRequiredDtoService.uploadClientsRequiredDto(clientRequiredDto, dataSet,
+                clientsRequiredTable, requiredJsonToUpload);
         return "All processed";
     }
 }

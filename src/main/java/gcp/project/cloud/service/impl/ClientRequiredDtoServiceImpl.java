@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,12 +16,6 @@ public class ClientRequiredDtoServiceImpl implements ClientRequiredDtoService {
     private final ConvertObjectToDataService<ClientRequiredDto> convertObjectToDataService;
     private final BigQueryRepository bigQueryRepository;
     private final ModelMapper modelMapper;
-    @Value("${data.set}")
-    private String dataSet;
-    @Value("${clients.required.table}")
-    private String clientsRequiredTable;
-    @Value("${json.to.upload.required.fields}")
-    private String requiredJsonToUpload;
 
     @Autowired
     public ClientRequiredDtoServiceImpl(
@@ -42,8 +35,9 @@ public class ClientRequiredDtoServiceImpl implements ClientRequiredDtoService {
     }
 
     @Override
-    public void uploadClientsRequiredDto(List<ClientRequiredDto> clientRequiredDtos) {
-        convertObjectToDataService.writeObjectToFile(clientRequiredDtos);
+    public void uploadClientsRequiredDto(List<ClientRequiredDto> clientRequiredDtos, String dataSet,
+                                         String clientsRequiredTable, String requiredJsonToUpload) {
+        convertObjectToDataService.writeObjectToFile(clientRequiredDtos, requiredJsonToUpload);
         bigQueryRepository.writeToTable(dataSet, clientsRequiredTable, requiredJsonToUpload);
     }
 }

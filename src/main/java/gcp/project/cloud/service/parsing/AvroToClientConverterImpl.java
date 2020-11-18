@@ -9,20 +9,17 @@ import java.util.List;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AvroToClientConverterImpl implements ConvertDataToObjectService<Client> {
-    @Value("${clients.from.storage.avro}")
-    private String clientsFromStorageAvro;
 
     @Override
-    public List<Client> parseFileToObject() {
+    public List<Client> parseFileToObject(String filePath) {
         DatumReader<Client> clientDatumReader = new SpecificDatumReader<>(Client.class);
         List<Client> clients = new ArrayList<>();
         try {
-            DataFileReader<Client> fileReader = new DataFileReader<>(new File(clientsFromStorageAvro),
+            DataFileReader<Client> fileReader = new DataFileReader<>(new File(filePath),
                     clientDatumReader);
             while (fileReader.hasNext()) {
                 clients.add(fileReader.next());

@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface ConvertDataToObjectService<T> {
 
-    List<T> parseFileToObject();
+    List<T> parseFileToObject(String filePath);
 }

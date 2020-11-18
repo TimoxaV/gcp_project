@@ -8,15 +8,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ClientRequiredToJsonConverterImpl implements
         ConvertObjectToDataService<ClientRequiredDto> {
     private final ObjectMapper objectMapper;
-    @Value("${json.to.upload.required.fields}")
-    private String requiredJsonToUpload;
 
     @Autowired
     public ClientRequiredToJsonConverterImpl(ObjectMapper objectMapper) {
@@ -24,9 +21,9 @@ public class ClientRequiredToJsonConverterImpl implements
     }
 
     @Override
-    public void writeObjectToFile(List<ClientRequiredDto> clientRequiredDtos) {
+    public void writeObjectToFile(List<ClientRequiredDto> clientRequiredDtos, String filePath) {
         try {
-            FileWriter fileWriter = new FileWriter(new File(requiredJsonToUpload));
+            FileWriter fileWriter = new FileWriter(new File(filePath));
             for (ClientRequiredDto clientRequiredDto : clientRequiredDtos) {
                 fileWriter.write(objectMapper.writeValueAsString(clientRequiredDto));
                 fileWriter.write("\n");

@@ -129,6 +129,12 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.cloud.functions</groupId>
+            <artifactId>functions-framework-api</artifactId>
+            <version>1.0.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -181,6 +187,11 @@
                     <stage.enableJarSplitting>true</stage.enableJarSplitting>
                     <deploy.stopPreviousVersion>true</deploy.stopPreviousVersion>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.functions</groupId>
+                <artifactId>function-maven-plugin</artifactId>
+                <version>0.9.5</version>
             </plugin>
         </plugins>
     </build>

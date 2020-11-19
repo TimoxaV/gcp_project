@@ -1,23 +1,25 @@
 package gcp.project.cloud.controllers;
 
+import gcp.project.cloud.dto.StorageDto;
 import gcp.project.cloud.model.Client;
 import gcp.project.cloud.model.ClientRequiredDto;
 import gcp.project.cloud.service.ClientRequiredDtoService;
 import gcp.project.cloud.service.ClientService;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProcessController {
     private final ClientService clientService;
     private final ClientRequiredDtoService clientRequiredDtoService;
-    @Value("${storage.bucket.name}")
-    private String storageBucketName;
-    @Value("${storage.object.name}")
-    private String storageObjectName;
+    private final Logger logger = LoggerFactory.getLogger(ProcessController.class);
     @Value("${clients.from.storage.avro}")
     private String clientsFromStorageAvro;
     @Value("${data.set}")
@@ -43,15 +45,18 @@ public class ProcessController {
         return "Hello";
     }
 
-    @GetMapping("/process")
-    public String process() {
-        List<Client> clients = clientService.downloadClients(storageBucketName, storageObjectName,
+    @PostMapping("/process")
+    public String postProcessData(@RequestBody StorageDto storageDto) {
+        logger.info("Hello from POST process");
+        String bucket = storageDto.getBucketName();
+        String object = storageDto.getObjectName();
+        List<Client> clients = clientService.downloadClients(bucket, object,
                 clientsFromStorageAvro);
         clientService.uploadClients(clients, jsonToUpload, dataSet, clientsTable);
         List<ClientRequiredDto> clientRequiredDto =
                 clientRequiredDtoService.getClientRequiredDto(clients);
         clientRequiredDtoService.uploadClientsRequiredDto(clientRequiredDto, dataSet,
                 clientsRequiredTable, requiredJsonToUpload);
-        return "All processed";
+        return "All processed Post";
     }
 }

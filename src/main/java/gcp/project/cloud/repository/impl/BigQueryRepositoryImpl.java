@@ -31,10 +31,11 @@ public class BigQueryRepositoryImpl implements BigQueryRepository {
     @Override
     public long writeToTable(String datasetName, String tableName, String jsonData) {
         TableId tableId = TableId.of(datasetName, tableName);
-        WriteChannelConfiguration writeChannelConfiguration =
-                WriteChannelConfiguration.newBuilder(tableId).setFormatOptions(FormatOptions.json())
-                        .setWriteDisposition(JobInfo.WriteDisposition.WRITE_APPEND)
-                        .build();
+        WriteChannelConfiguration writeChannelConfiguration = WriteChannelConfiguration
+                .newBuilder(tableId)
+                .setFormatOptions(FormatOptions.json())
+                .setWriteDisposition(JobInfo.WriteDisposition.WRITE_APPEND)
+                .build();
         TableDataWriteChannel writer = bigQuery.writer(writeChannelConfiguration);
         try (OutputStream stream = Channels.newOutputStream(writer)) {
             Files.copy(Path.of(jsonData), stream);

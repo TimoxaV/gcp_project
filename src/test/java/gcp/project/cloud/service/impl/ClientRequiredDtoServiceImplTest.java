@@ -51,14 +51,17 @@ public class ClientRequiredDtoServiceImplTest {
     }
 
     @Test
-    public void uploadClientsRequiredDtoTest() throws IOException {
+    public void uploadClientsRequiredDtoTest() {
         List<ClientRequiredDto> clientRequiredDtos = List.of(new ClientRequiredDto(1L, "John"));
         clientRequiredDtoService.uploadClientsRequiredDto(clientRequiredDtos, TEST_STRING,
                 TEST_STRING, FILE_CLIENT_REQUIRED);
         String expected = "{\"id\":1,\"name\":\"John\"}";
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_CLIENT_REQUIRED));
-        String actual = bufferedReader.readLine();
-        bufferedReader.close();
+        String actual = null;
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_CLIENT_REQUIRED))) {
+            actual = bufferedReader.readLine();
+        } catch (IOException e) {
+            Assert.fail("File doesn't exist " + e);
+        }
         Assert.assertEquals(expected, actual);
     }
 }

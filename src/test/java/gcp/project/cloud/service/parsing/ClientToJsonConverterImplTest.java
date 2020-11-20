@@ -21,12 +21,15 @@ public class ClientToJsonConverterImplTest {
     }
 
     @Test
-    public void writeObjectToFileTest_Ok() throws IOException {
+    public void writeObjectToFileTest_Ok() {
         String expected = "{\"id\": 1, \"name\": \"John\", \"phone\": \"1234\", \"address\": \"address\"}";
         objectToDataService.writeObjectToFile(List.of(client), FILE_CLIENT);
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_CLIENT));
-        String actual = bufferedReader.readLine();
-        bufferedReader.close();
+        String actual = null;
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_CLIENT))) {
+            actual = bufferedReader.readLine();
+        } catch (IOException e) {
+            Assert.fail("File doesn't exist " + e);
+        }
         Assert.assertEquals(expected, actual);
     }
 }

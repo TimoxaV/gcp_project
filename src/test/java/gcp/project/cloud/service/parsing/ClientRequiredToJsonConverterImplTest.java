@@ -25,12 +25,15 @@ public class ClientRequiredToJsonConverterImplTest {
     }
 
     @Test
-    public void writeObjectToFileTest_Ok() throws IOException {
+    public void writeObjectToFileTest_Ok() {
         objectToDataService.writeObjectToFile(List.of(clientRequiredDto), FILE_CLIENT_REQUIRED);
         String expected = "{\"id\":1,\"name\":\"John\"}";
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_CLIENT_REQUIRED));
-        String actual = bufferedReader.readLine();
-        bufferedReader.close();
+        String actual = null;
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_CLIENT_REQUIRED))) {
+            actual = bufferedReader.readLine();
+        } catch (IOException e) {
+            Assert.fail("File doesn't exist " + e);
+        }
         Assert.assertEquals(expected, actual);
     }
 }

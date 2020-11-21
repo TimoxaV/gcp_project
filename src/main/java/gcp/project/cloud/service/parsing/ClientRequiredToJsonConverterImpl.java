@@ -2,7 +2,7 @@ package gcp.project.cloud.service.parsing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gcp.project.cloud.exceptions.DataProcessException;
-import gcp.project.cloud.model.ClientRequiredDto;
+import gcp.project.cloud.model.ClientRequiredInfo;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ClientRequiredToJsonConverterImpl implements
-        ConvertObjectToDataService<ClientRequiredDto> {
+        ConvertObjectToDataService<ClientRequiredInfo> {
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -21,11 +21,11 @@ public class ClientRequiredToJsonConverterImpl implements
     }
 
     @Override
-    public void writeObjectToFile(List<ClientRequiredDto> clientRequiredDtos, String filePath) {
+    public void writeObjectToFile(List<ClientRequiredInfo> clientRequiredInfos, String filePath) {
         try {
             FileWriter fileWriter = new FileWriter(new File(filePath));
-            for (ClientRequiredDto clientRequiredDto : clientRequiredDtos) {
-                fileWriter.write(objectMapper.writeValueAsString(clientRequiredDto));
+            for (ClientRequiredInfo clientRequiredInfo : clientRequiredInfos) {
+                fileWriter.write(objectMapper.writeValueAsString(clientRequiredInfo));
                 fileWriter.write("\n");
             }
             fileWriter.close();

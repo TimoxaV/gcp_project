@@ -1,10 +1,12 @@
 package gcp.project.cloud.controllers;
 
-import gcp.project.cloud.dto.StorageDto;
+import gcp.project.cloud.dto.DataAttributesDto;
+import gcp.project.cloud.dto.NotificationDto;
 import gcp.project.cloud.model.Client;
-import gcp.project.cloud.model.ClientRequiredDto;
-import gcp.project.cloud.service.ClientRequiredDtoService;
+import gcp.project.cloud.model.ClientRequiredInfo;
+import gcp.project.cloud.service.ClientRequiredInfoService;
 import gcp.project.cloud.service.ClientService;
+import gcp.project.cloud.service.PubSubService;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ProcessController {
     private final ClientService clientService;
-    private final ClientRequiredDtoService clientRequiredDtoService;
+    private final ClientRequiredInfoService clientRequiredInfoService;
+    private final PubSubService pubSubService;
     private final Logger logger = LoggerFactory.getLogger(ProcessController.class);
     @Value("${clients.from.storage.avro}")
     private String clientsFromStorageAvro;
@@ -35,9 +38,11 @@ public class ProcessController {
 
     @Autowired
     public ProcessController(ClientService clientService,
-                             ClientRequiredDtoService clientRequiredDtoService) {
+                             ClientRequiredInfoService clientRequiredInfoService,
+                             PubSubService pubSubService) {
         this.clientService = clientService;
-        this.clientRequiredDtoService = clientRequiredDtoService;
+        this.clientRequiredInfoService = clientRequiredInfoService;
+        this.pubSubService = pubSubService;
     }
 
     @GetMapping()
@@ -46,17 +51,20 @@ public class ProcessController {
     }
 
     @PostMapping("/process")
-    public String postProcessData(@RequestBody StorageDto storageDto) {
+    public String postProcessData(@RequestBody NotificationDto notificationDto) {
         logger.info("Hello from POST process");
-        String bucket = storageDto.getBucketName();
-        String object = storageDto.getObjectName();
+        DataAttributesDto attributes = pubSubService.getDataAttributes(notificationDto);
+        String bucket = attributes.getBucket();
+        String object = attributes.getName();
+        logger.info("Start processing: " + bucket + " / " + object);
         List<Client> clients = clientService.downloadClients(bucket, object,
                 clientsFromStorageAvro);
         clientService.uploadClients(clients, jsonToUpload, dataSet, clientsTable);
-        List<ClientRequiredDto> clientRequiredDto =
-                clientRequiredDtoService.getClientRequiredDto(clients);
-        clientRequiredDtoService.uploadClientsRequiredDto(clientRequiredDto, dataSet,
+        List<ClientRequiredInfo> clientRequiredDto =
+                clientRequiredInfoService.getClientRequiredDto(clients);
+        clientRequiredInfoService.uploadClientsRequiredInfo(clientRequiredDto, dataSet,
                 clientsRequiredTable, requiredJsonToUpload);
+        logger.info("Finish processing: " + bucket + " / " + object);
         return "All processed Post";
     }
 }

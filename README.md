@@ -14,7 +14,7 @@ Cloud Function triggers creating an object in Google Storage and send request to
 - Google Storage
 - Google BigQuery
 - Cloud Run
-- Cloud Function
+- Pub/Sub
 - Mockito
 - Docker
 - REST
@@ -28,9 +28,10 @@ Cloud Function triggers creating an object in Google Storage and send request to
 5) Visit http://localhost:8080/ in your browser
 
 **To run the project on Cloud Run:**
-
+  
 1) Place JSON file with your GCP credentials into resource folder
 2) Run in terminal mvn clean package
 3) Build and upload container to GCP: gcloud builds submit --tag gcr.io/*YourProjectId*/*ContainerName*
-4) Create Cloud Run service using the container created on step 3 
-5) Create Cloud Function (example in package "function" CloudFunctionExample.class) specifying trigger needed
+4) Create Cloud Run service using the container created on step 3
+5) Create a bucket in your Google Storage, Pub/Sub topic and connected subscription
+6) To make Storage send notifications on create-update event to the topic run this command in your Google Cloud Shell: gsutil notification create -f json -t projects/*YourProjectId*/topics/*YourTopicName* -e OBJECT_FINALIZE gs://gcp_project_test_bucket

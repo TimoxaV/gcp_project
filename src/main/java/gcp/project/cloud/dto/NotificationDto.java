@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StorageDto {
-    private String bucketName;
-    private String objectName;
+public class NotificationDto {
+    private MessageDto message;
+    private String subscription;
 }

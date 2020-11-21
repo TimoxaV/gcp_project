@@ -1,9 +1,9 @@
 package gcp.project.cloud.service.impl;
 
 import gcp.project.cloud.model.Client;
-import gcp.project.cloud.model.ClientRequiredDto;
+import gcp.project.cloud.model.ClientRequiredInfo;
 import gcp.project.cloud.repository.BigQueryRepository;
-import gcp.project.cloud.service.ClientRequiredDtoService;
+import gcp.project.cloud.service.ClientRequiredInfoService;
 import gcp.project.cloud.service.parsing.ConvertObjectToDataService;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,14 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClientRequiredDtoServiceImpl implements ClientRequiredDtoService {
-    private final ConvertObjectToDataService<ClientRequiredDto> convertObjectToDataService;
+public class ClientRequiredInfoServiceImpl implements ClientRequiredInfoService {
+    private final ConvertObjectToDataService<ClientRequiredInfo> convertObjectToDataService;
     private final BigQueryRepository bigQueryRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public ClientRequiredDtoServiceImpl(
-            ConvertObjectToDataService<ClientRequiredDto> convertObjectToDataService,
+    public ClientRequiredInfoServiceImpl(
+            ConvertObjectToDataService<ClientRequiredInfo> convertObjectToDataService,
             BigQueryRepository bigQueryRepository,
             ModelMapper modelMapper) {
         this.convertObjectToDataService = convertObjectToDataService;
@@ -28,16 +28,18 @@ public class ClientRequiredDtoServiceImpl implements ClientRequiredDtoService {
     }
 
     @Override
-    public List<ClientRequiredDto> getClientRequiredDto(List<Client> clients) {
+    public List<ClientRequiredInfo> getClientRequiredDto(List<Client> clients) {
         return clients.stream()
-                .map(c -> modelMapper.map(c, ClientRequiredDto.class))
+                .map(c -> modelMapper.map(c, ClientRequiredInfo.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void uploadClientsRequiredDto(List<ClientRequiredDto> clientRequiredDtos, String dataSet,
-                                         String clientsRequiredTable, String requiredJsonToUpload) {
-        convertObjectToDataService.writeObjectToFile(clientRequiredDtos, requiredJsonToUpload);
+    public void uploadClientsRequiredInfo(List<ClientRequiredInfo> clientRequiredInfos,
+                                          String dataSet,
+                                          String clientsRequiredTable,
+                                          String requiredJsonToUpload) {
+        convertObjectToDataService.writeObjectToFile(clientRequiredInfos, requiredJsonToUpload);
         bigQueryRepository.writeToTable(dataSet, clientsRequiredTable, requiredJsonToUpload);
     }
 }

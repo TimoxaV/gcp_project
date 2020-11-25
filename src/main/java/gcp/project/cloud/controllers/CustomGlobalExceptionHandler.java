@@ -2,7 +2,11 @@ package gcp.project.cloud.controllers;
 
 import gcp.project.cloud.exceptions.ApiError;
 import gcp.project.cloud.exceptions.DataProcessException;
-import gcp.project.cloud.exceptions.JobWaitingException;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,12 +17,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import java.nio.file.NoSuchFileException;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -50,10 +48,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, error, exception));
     }
 
-    @ExceptionHandler(NoSuchFileException.class)
-    protected ResponseEntity<Object> handleIOException(NoSuchFileException exception) {
-        String message = exception.getFile() + " file is absent. Check whether all needed "
-                + "files are present";
+    @ExceptionHandler(NullPointerException.class)
+    protected ResponseEntity<Object> handleNullPointer(NullPointerException exception) {
+        String message = "It seems there is no such bucket or object is Storage";
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
         apiError.setMessage(message);
         return buildResponseEntity(apiError);
@@ -62,13 +59,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     @ExceptionHandler(DataProcessException.class)
     protected ResponseEntity<Object> handleDataProcessException(DataProcessException exception) {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
-        apiError.setMessage(exception.getMessage());
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(JobWaitingException.class)
-    protected ResponseEntity<Object> handleJobWaitingException(DataProcessException exception) {
-        ApiError apiError = new ApiError(HttpStatus.REQUEST_TIMEOUT);
         apiError.setMessage(exception.getMessage());
         return buildResponseEntity(apiError);
     }

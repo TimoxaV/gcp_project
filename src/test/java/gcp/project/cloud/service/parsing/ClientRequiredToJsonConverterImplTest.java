@@ -1,6 +1,7 @@
 package gcp.project.cloud.service.parsing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gcp.project.cloud.exceptions.DataProcessException;
 import gcp.project.cloud.model.ClientRequiredInfo;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 public class ClientRequiredToJsonConverterImplTest {
     private static final String FILE_CLIENT_REQUIRED = "src/test/resources/test_clients_required_upload.json";
+    private static final String NO_FILE = "C::/Documents/testfile.json";
     private ConvertObjectToDataService<ClientRequiredInfo> objectToDataService;
     private ObjectMapper objectMapper;
     private ClientRequiredInfo clientRequiredInfo;
@@ -35,5 +37,10 @@ public class ClientRequiredToJsonConverterImplTest {
             Assert.fail("File doesn't exist " + e);
         }
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test(expected = DataProcessException.class)
+    public void writeObjectToFileTestNoFile() {
+        objectToDataService.writeObjectToFile(List.of(clientRequiredInfo), NO_FILE);
     }
 }

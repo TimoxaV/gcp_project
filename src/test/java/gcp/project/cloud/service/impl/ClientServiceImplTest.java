@@ -16,6 +16,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
 
 public class ClientServiceImplTest {
     private static final String TEST_CLIENTS_FROM_STORAGE =
@@ -47,12 +50,16 @@ public class ClientServiceImplTest {
     @Test
     public void downloadClientsTest() {
         List<Client> clientsActual = clientService.downloadClients(TEST_STRING, TEST_STRING, TEST_CLIENTS_FROM_STORAGE);
+        verify(googleStorageRepository, Mockito.times(1))
+                .downloadObjectFromStorage(any(), any(), any());
         Assert.assertEquals(clientsExpected, clientsActual);
     }
 
     @Test
     public void uploadClientsTest() {
         clientService.uploadClients(clientsToUpload, FILE_CLIENT, TEST_STRING, TEST_STRING);
+        verify(bigQueryRepository, Mockito.times(1))
+                .writeToTable(anyString(), anyString(), anyString());
         String expected = "{\"id\": 1, \"name\": \"John\", \"phone\": \"1234\", \"address\": \"address\"}";
         String actual = null;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_CLIENT));) {

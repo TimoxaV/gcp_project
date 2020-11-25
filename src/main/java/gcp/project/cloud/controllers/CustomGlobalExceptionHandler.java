@@ -1,7 +1,8 @@
 package gcp.project.cloud.controllers;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import gcp.project.cloud.exceptions.ApiError;
+import gcp.project.cloud.exceptions.DataProcessException;
+import gcp.project.cloud.exceptions.JobWaitingException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,9 +13,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.io.IOException;
-import java.util.Date;
+import java.nio.file.NoSuchFileException;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             HttpStatus status,
             WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", new Date());
+        body.put("timestamp", LocalDateTime.now());
         body.put("status", status.value());
         List<String> errors = exception.getBindingResult()
                 .getAllErrors()
@@ -48,6 +48,29 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             WebRequest request) {
         String error = "Notification's JSON request is not in appropriate form.";
         return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, error, exception));
+    }
+
+    @ExceptionHandler(NoSuchFileException.class)
+    protected ResponseEntity<Object> handleIOException(NoSuchFileException exception) {
+        String message = exception.getFile() + " file is absent. Check whether all needed "
+                + "files are present";
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        apiError.setMessage(message);
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(DataProcessException.class)
+    protected ResponseEntity<Object> handleDataProcessException(DataProcessException exception) {
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        apiError.setMessage(exception.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(JobWaitingException.class)
+    protected ResponseEntity<Object> handleJobWaitingException(DataProcessException exception) {
+        ApiError apiError = new ApiError(HttpStatus.REQUEST_TIMEOUT);
+        apiError.setMessage(exception.getMessage());
+        return buildResponseEntity(apiError);
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {

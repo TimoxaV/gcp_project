@@ -1,5 +1,6 @@
 package gcp.project.cloud.service.parsing;
 
+import gcp.project.cloud.exceptions.DataProcessException;
 import gcp.project.cloud.model.Client;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 public class ClientToJsonConverterImplTest {
     private static final String FILE_CLIENT = "src/test/resources/test_clients_upload.json";
+    private static final String NO_FILE = "C::/Documents/testfile.json";
     private ConvertObjectToDataService<Client> objectToDataService;
     private Client client;
 
@@ -31,5 +33,10 @@ public class ClientToJsonConverterImplTest {
             Assert.fail("File doesn't exist " + e);
         }
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test(expected = DataProcessException.class)
+    public void writeObjectToFileTestNoFile() {
+        objectToDataService.writeObjectToFile(List.of(client), NO_FILE);
     }
 }

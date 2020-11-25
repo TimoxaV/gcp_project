@@ -7,15 +7,18 @@ import gcp.project.cloud.repository.BigQueryRepository;
 import gcp.project.cloud.service.ClientRequiredInfoService;
 import gcp.project.cloud.service.parsing.ConvertObjectToDataService;
 import gcp.project.cloud.service.parsing.ClientRequiredToJsonConverterImpl;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 public class ClientRequiredInfoServiceImplTest {
     private static final String FILE_CLIENT_REQUIRED =
@@ -51,6 +54,7 @@ public class ClientRequiredInfoServiceImplTest {
         List<ClientRequiredInfo> clientRequiredInfos = List.of(new ClientRequiredInfo(1L, "John"));
         clientRequiredInfoService.uploadClientsRequiredInfo(clientRequiredInfos, TEST_STRING,
                 TEST_STRING, FILE_CLIENT_REQUIRED);
+        verify(bigQueryRepository, times(1)).writeToTable(anyString(), anyString(), anyString());
         String expected = "{\"id\":1,\"name\":\"John\"}";
         String actual = null;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_CLIENT_REQUIRED))) {

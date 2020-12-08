@@ -2,7 +2,7 @@
 
 **Implemented basic data exchange process between Google Storage and Google BigQuery** 
 
-Cloud Function triggers creating an object in Google Storage and send request to start processing:
+Pub/Sub service receives a message from Google Storage when an object is created or updated and sends request to start processing:
 1) Downloading avro file from Storage
 2) Parsing avro files to objects
 3) Write all objects to JSON

@@ -26,35 +26,35 @@ public class AppConfig {
     @Value("${bigquery.project-id}")
     private String projectId;
 
-    @Bean
-    public ServiceAccountCredentials getCredentials() {
-        ServiceAccountCredentials credentials;
-        try {
-            InputStream credStream = getClass().getResourceAsStream(gcred);
-            credentials = ServiceAccountCredentials.fromStream(credStream);
-            credStream.close();
-            return credentials;
-        } catch (IOException e) {
-            throw new GoogleCredentialsException("Can't get credentials", e);
-        }
-    }
+//    @Bean
+//    public ServiceAccountCredentials getCredentials() {
+//        ServiceAccountCredentials credentials;
+//        try {
+//            InputStream credStream = getClass().getResourceAsStream(gcred);
+//            credentials = ServiceAccountCredentials.fromStream(credStream);
+//            credStream.close();
+//            return credentials;
+//        } catch (IOException e) {
+//            throw new GoogleCredentialsException("Can't get credentials", e);
+//        }
+//    }
 
-    @Bean
-    public Storage getGoogleStorage() {
-        return StorageOptions.newBuilder()
-                .setCredentials(getCredentials())
-                .build()
-                .getService();
-    }
+//    @Bean
+//    public Storage getGoogleStorage() {
+//        return StorageOptions.newBuilder()
+//                .setCredentials(getCredentials())
+//                .build()
+//                .getService();
+//    }
 
-    @Bean
-    public BigQuery getBigQuery() {
-        return BigQueryOptions.newBuilder()
-                .setCredentials(getCredentials())
-                .setProjectId(projectId)
-                .build()
-                .getService();
-    }
+//    @Bean
+//    public BigQuery getBigQuery() {
+//        return BigQueryOptions.newBuilder()
+//                .setCredentials(getCredentials())
+//                .setProjectId(projectId)
+//                .build()
+//                .getService();
+//    }
 
     @Bean
     public ModelMapper getModelMapper() {
